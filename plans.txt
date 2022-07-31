@@ -1,0 +1,7 @@
+Make the camera work on local
+make camera work on donkeycar
+
+
+WORKING WITH OAK-D LITE (CAM):
+    all data from cam > node > node for any task > node for output
+    take the data and send it to the local machine
