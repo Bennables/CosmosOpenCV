@@ -1,0 +1,9 @@
+1. make sure it recognizes obstacles
+2. change direction of the car
+3. return to lane
+4. make sure it continues.
+
+
+
+changes:
+roi(image) --> roi(image, bounds) change comments
