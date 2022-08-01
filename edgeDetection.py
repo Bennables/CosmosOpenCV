@@ -15,14 +15,10 @@ def show_image(name, img):
 
 def find_canny(img, lower_threshold, upper_threshold):
     """ takes imread image, lower threshold, upper threshold for contrast"""
-    img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-    mask_red1 = cv2.inRange(img_hsv, (150, 50, 50), (255, 0 , 0))
-    red = np.zeros_like(img, np.uint8)
-    red[mask_red1] = img[mask_red1]
-    img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    img_grayscale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     #Gaussian blur takes the image, kernel size, and kernal stdev, also takes more 
-    #look thru documentation 
-    img_gaussian_blur = cv2.GaussianBlur(red, (5,5), 0)
+    #look thru documentation
+    img_gaussian_blur = cv2.GaussianBlur(img_grayscale, (5,5), 0)
     #takes the gaussian image, lower threshold, and upper for gradient changes.
     img_canny = cv2.Canny(img_gaussian_blur, lower_threshold, upper_threshold)
     return img_canny
@@ -41,6 +37,7 @@ def region_of_interest(image):
     return masked_image
     
 def draw_lines(img,lines):
+    # creates an array with 0s same shape as img
     # plots points.
     print('lines: ', lines)
     if lines is not None:

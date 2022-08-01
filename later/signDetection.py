@@ -15,9 +15,10 @@ def show_image(name, img):
 
 def find_red(img):
     """filters out red, takes rgb image"""
+    # ask kishore
     
-    lower = np.array([0, 0, 0])
-    upper = np.array([350, 100, 50])
+    lower = np.array([0, 33, 82])
+    upper = np.array([0, 100, 100])
     print('types of lower and upper are: ', type(lower), type(upper))
     img_red = cv2.inRange(img, lower, upper)
     show_image('red', img_red)

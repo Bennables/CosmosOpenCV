@@ -22,14 +22,12 @@ def find_canny(img, thresh_low, thresh_high):
     return img_canny
 
 
-def region_of_interest(image):  # function for extracting region of interest
+def region_of_interest(image, bounds):  # function for extracting region of interest
     # bounds in (x,y) format
     # bounds = np.array([[[0,250],[0,200],[150,100],[500,100],[650,200],[650,250]]],dtype=np.int32)
     # creates a polygon
     # notation of coords :
     # bounds = np.array([[[0, 250], [0, 200], [150, 100], [500, 100], [650, 200], [650, 250]]], dtype=np.int32)
-    bounds = np.array([[[0, image.shape[0]], [0, image.shape[0] / 2], [900, image.shape[0]/2], [900, image.shape[0]]]],
-                      dtype=np.int32)
     mask = np.zeros_like(image)
 
     # highlights the area
@@ -113,7 +111,8 @@ def compute_average_lines(img, lines):
 # image1 = cv2.imread('test_image.png')
 # lane_image = np.copy(image1)
 # lane_canny = find_canny(image1, 100, 200)
-# lane_roi = region_of_interest(lane_canny)
+# lane_roi = region_of_interest(lane_canny, np.array([[[0, image.shape[0]], [0, image.shape[0] / 2], [900, image.shape[0]/2], [900, image.shape[0]]]],
+#                     dtype=np.int32))
 # lane_lines = cv2.HoughLinesP(lane_roi, 2, np.pi / 180, 50, 40, 5)
 # print(lane_lines)
 # lane_lines_plotted = draw_lines(lane_image, lane_lines)
@@ -154,7 +153,8 @@ while True:
     lane_image_mask = cv2.bitwise_and(lane_image_2,lane_image_2,mask=lane_white_mask)
     # show_image('bitmask',lane_image_mask)
     lane_canny_2 = find_canny(lane_image_mask,50,150)
-    lane_roi_2 = region_of_interest(lane_canny_2)
+    lane_roi_2 = region_of_interest(lane_canny_2, np.array([[[0, image.shape[0]], [0, image.shape[0] / 2], [900, image.shape[0]/2], [900, image.shape[0]]]],
+                      dtype=np.int32))
     lane_lines_2 = cv2.HoughLinesP(lane_roi_2,1,np.pi/180,15,5,15)
     lane_lines_plotted_2 = draw_lines(lane_image_2,lane_lines_2)
     result_lines_2 = compute_average_lines(lane_image_2,lane_lines_2)
@@ -178,7 +178,7 @@ while True:
     ret, frame = cap.read() # reading the frame
 
 
-    edges = findCanny(frame, 100, 200, (5, 5)) # get edges
+    edges = find_canny(frame, 100, 200, (5, 5)) # get edges
     cv2.imshow('frame', edges) # displaying the frame
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
