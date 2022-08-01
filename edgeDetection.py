@@ -23,13 +23,12 @@ def find_canny(img, lower_threshold, upper_threshold):
     img_canny = cv2.Canny(img_gaussian_blur, lower_threshold, upper_threshold)
     return img_canny
 
-def region_of_interest(image):
+def region_of_interest(image, bounds):
     """paints the canny lines in the roi. image is already cannyd,
     so it uses bitwise and to show just the lines in the roi"""
     # starting x, ending x, starting y, ending y
     # shape is (height, width, depth)
     # the bounds are shape doesn't matter as long as you go in one direction, mix and you get triangle.
-    bounds = np.array([[[0, 0], [0,image.shape[0]], [image.shape[1], image.shape[0]], [image.shape[1],0]]], dtype=np.int32)
     #sets everything to zeros
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, bounds, [255,0,0])
@@ -107,7 +106,7 @@ lane_image = np.copy(image1)
 lane_canny = find_canny(image1, 100, 200)
 #show_image('hi', lane_canny)
 
-lane_roi = region_of_interest(lane_canny)
+lane_roi = region_of_interest(lane_canny, np.array([[[0, 0], [0,lane_canny.shape[0]], [lane_canny.shape[1], lane_canny.shape[0]], [lane_canny.shape[1],0]]], dtype=np.int32))
 lane_lines = cv2.HoughLinesP(lane_roi, 1, math.pi/180, 15, minLineLength=10, maxLineGap=10)
     #lane_roi, 3, 5, np.pi / 180, 50, 40, 5)
 lane_lines_plotted = draw_lines(lane_image, lane_lines)

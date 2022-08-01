@@ -60,8 +60,8 @@ depth.disparity.link(xout.input)
 def find_red_yellow(frame):
     show_image('frame', frame)
     hsv_img = cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower = np.array([0, 0, 255])
-    upper = np.array([177,250 ,255])
+    lower = np.array([0, 0, 0])
+    upper = np.array([0, 80 ,150])
     hsv_image = cv2.inRange(hsv_img, lower, upper)
     show_image('yesh', hsv_image)
 
