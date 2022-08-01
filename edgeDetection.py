@@ -1,3 +1,4 @@
+import math
 from turtle import right
 import cv2 as cv2
 import numpy as np
@@ -14,10 +15,14 @@ def show_image(name, img):
 
 def find_canny(img, lower_threshold, upper_threshold):
     """ takes imread image, lower threshold, upper threshold for contrast"""
-    img_grayscale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    mask_red1 = cv2.inRange(img_hsv, (150, 50, 50), (255, 0 , 0))
+    red = np.zeros_like(img, np.uint8)
+    red[mask_red1] = img[mask_red1]
+    img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     #Gaussian blur takes the image, kernel size, and kernal stdev, also takes more 
-    #look thru documentation
-    img_gaussian_blur = cv2.GaussianBlur(img_grayscale, (5,5), 0)
+    #look thru documentation 
+    img_gaussian_blur = cv2.GaussianBlur(red, (5,5), 0)
     #takes the gaussian image, lower threshold, and upper for gradient changes.
     img_canny = cv2.Canny(img_gaussian_blur, lower_threshold, upper_threshold)
     return img_canny
@@ -26,6 +31,8 @@ def region_of_interest(image):
     """paints the canny lines in the roi. image is already cannyd,
     so it uses bitwise and to show just the lines in the roi"""
     # starting x, ending x, starting y, ending y
+    # shape is (height, width, depth)
+    # the bounds are shape doesn't matter as long as you go in one direction, mix and you get triangle.
     bounds = np.array([[[0, 0], [0,image.shape[0]], [image.shape[1], image.shape[0]], [image.shape[1],0]]], dtype=np.int32)
     #sets everything to zeros
     mask = np.zeros_like(image)
@@ -34,8 +41,6 @@ def region_of_interest(image):
     return masked_image
     
 def draw_lines(img,lines):
-    # creates an array with 0s same shape as img
-    mask_lines = np.zeros_like(img)
     # plots points.
     print('lines: ', lines)
     if lines is not None:
@@ -97,25 +102,25 @@ def computeAverageLines(image, lines): # smooth lines by averaging them
     # print(leftFitPoints)
     # print(rightFitPoints)
     return [[leftFitPoints], [rightFitPoints]]
+    
+    
 # image mapping w/ hough lines and gradient changes
-image1 = cv2.imread('test_image.png')
+image1 = cv2.imread('stop.jpg')
 lane_image = np.copy(image1)
 lane_canny = find_canny(image1, 100, 200)
-show_image('hi', lane_canny)
+#show_image('hi', lane_canny)
+
 lane_roi = region_of_interest(lane_canny)
-lane_lines = cv2.HoughLinesP(lane_roi, 2, np.pi / 180, 50, 40, 5)
-# print("lane lines: ", lane_lines)
-# print("##################################################")
+lane_lines = cv2.HoughLinesP(lane_roi, 1, math.pi/180, 15, minLineLength=10, maxLineGap=10)
+    #lane_roi, 3, 5, np.pi / 180, 50, 40, 5)
 lane_lines_plotted = draw_lines(lane_image, lane_lines)
 show_image('lines', lane_lines_plotted)
 result_lines = computeAverageLines(lane_image, lane_lines)
 print('result lines' ,result_lines)
 if result_lines is not None:
-    result_lines = result_lines
     print('result_lines type', type(result_lines))
     print('######################################')
     final_lines_mask = draw_lines(lane_image, result_lines)
-    show_image('final', final_lines_mask)
 
     #Plotting the final lines on main image
     for points in result_lines:
