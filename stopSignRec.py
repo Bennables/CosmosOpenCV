@@ -1,8 +1,5 @@
 """
 To-Do
-add detection for an orange thing in the lane
-change direction
-yesh
 create object to let it stop/continue
 make functions for stopping for fixed time, and continuing
 clean up code
