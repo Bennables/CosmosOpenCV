@@ -19,18 +19,26 @@ from lane_functions import VESC
 import serial.tools.list_ports
 print(list(serial.tools.list_ports.comports()))
 
+#function for showing images using cv2
 def imShow(name, img):
+    """shows images, params: name(str), img(np.array)"""
     cv2.imshow(name, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     
+#changes image to canny
 def toCanny(img):
+    """changes image to canny using grayscale-> gaussian -> canny. returns canny
+    params: image(np.array)"""
     gray_x = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gaus_x = cv2.GaussianBlur(gray_x, (5,5), 0)
     canny_x = cv2.Canny(gaus_x, 100, 200)
     return canny_x
 
+# finds contours and finds the largest to plot a box
 def contours(img, mask):
+    """finds the contours, finds the largest contour, and then creates rectangle if contour fig is big enough
+    params: img to lay over(np.array), mask(binary img preferably for contour scanning)"""
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
     #cv2.drawContours(img, contours, -1, (0,255,0), 3)
     max_len_index = 0
