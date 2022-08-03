@@ -1,6 +1,6 @@
 """
-add detection for an orange thing in the lane
 change direction
+comment it up
 """
 
 import cv2 as cv2
@@ -8,7 +8,7 @@ import numpy as np
 
 def imShow(name, img):
     cv2.imshow(name, img)
-    cv2.waitKey(1500)
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 def toCanny(img):
@@ -27,13 +27,16 @@ def contours(img, mask):
             max_len_index = counter
     # print("contours", contours)
     # print('max len index' , max_len_index)
-    x, y, w, h = cv2.boundingRect(contours[max_len_index])
-    print(x, y, w, h)
-
-    #relative to shape(shape[1]* .2) <-- sumthin
-    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
-    imShow('fjkd', img)
-    return img, x, y, w, h
+    try:
+        x, y, w, h = cv2.boundingRect(contours[max_len_index])
+        #relative to shape(shape[1]* .2) <-- sumthin
+        print (w, mask.shape)
+        if h > w*2 and w > int(img.shape[1] * .2):
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+            return img, x, y, w, h, True
+    
+    except: 
+        return 'there\'s no cone'
 
 def regionOfInterest(img):
     # 
@@ -55,13 +58,17 @@ low = np.uint8([16, 89, 230])
 high = np.uint8([80, 203, 255])
 filtered = cv2.inRange(orig_image, low, high)
 
-#filter in area we want
+#filter in area we want 
 cam_area = regionOfInterest(filtered)
 cannied = toCanny(cam_area)
 imShow('cannied', cannied)
-contoured = contours(cam_area, cannied)
-stopSign, x, y, w, h = contours(orig_image, cam_area)
-cv2.putText(stopSign, 'Stop sign detected!', (((x + w) // 2) - 10, y - 20), cv2.FONT_HERSHEY_PLAIN, int(orig_image.shape[1]*.002), (0, 255, 0), int(orig_image.shape[1] * 0.0005))
+try:
+    cone, x, y, w, h, isThereCone = contours(orig_image, cam_area)
+    cv2.putText(cone, 'cone is here', (((x + w) // 2) + 20, y +  20), cv2.FONT_HERSHEY_PLAIN, int(orig_image.shape[1]*.002), (0, 255, 0), int(orig_image.shape[1] * 0.0005))
+    imShow('completed' ,cone)
+except:
+    pass
+
 
 
 
