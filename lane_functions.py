@@ -104,7 +104,7 @@ class VESC:
 
  
 
-  def stop(self, angle, throttle):
+  def stop(self):
 
     self.v.set_servo((0) + 0)
 
