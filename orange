@@ -50,17 +50,19 @@ def contours(img, mask):
         print('img not found')
 
 
-orig_image = cv2.imread('gradient.jpg')
+orig_image = cv2.imread('C:\Cosmos\CosmosOpenCV\gradient.jpg')
 orig_image = orig_image.copy()
 cannied = toCanny(orig_image)
 #imShow('canny', cannied)
 
-frame_hsv = cv2.cvtColor(orig_image, cv2.COLOR_BGR2HSV)
-imShow('frame_hsv', frame_hsv)  
-mask = cv2.inRange(frame_hsv, (10, 100, 20), (25, 255, 255))#254, 61, 2, 254, 187, 8
+
+imShow('fsd', orig_image)
+mask = cv2.inRange(orig_image, (0,0,170), (49,30, 255))
+# mask1 = cv2.inRange(orig_image, (2, 34, 180), (2, 67, 255))
+# mask = cv2.bitwise_or(mask1, mask2)
 
 # mask1 = cv2.inRange(frame_hsv, (0,50,20), (5,255,255))
-# mask2 = cv2.inRange(frame_hsv, (120,50,20), (180,255,255))
+# mask2 = cv2.inRange(frame _hsv, (120,50,20), (180,255,255))
 
 imShow('fd,', mask)
 
