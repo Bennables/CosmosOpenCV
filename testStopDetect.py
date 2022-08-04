@@ -98,10 +98,14 @@ with dai.Device(pipeline) as device:
         cannied = toCanny(orig_image)
         #imShow('canny', cannied)
 
-        low = np.uint8([0, 0, 100])
-        high = np.uint8([30, 30, 255])
-        mask = cv2.inRange(orig_image, low, high)
-        imShow('mask', mask)
+        frame_hsv = cv2.cvtColor(orig_image, cv2.COLOR_BGR2HSV)
+        imShow('frame_hsv', frame_hsv)
+        mask = cv2.inRange(frame_hsv, (3,252,252), (4,255,255))
+        imShow('fd,', mask)
+        # low = np.uint8([0, 0, 100])
+        # high = np.uint8([30, 30, 255])
+        # mask = cv2.inRange(orig_image, low, high)
+        # imShow('mask', mask)
         try:
             stopSign, x, y, w, h, isStopSign = contours(orig_image, mask)
             cv2.putText(stopSign, 'Stop sign detected!', (((x + w) // 2) - 10, y - 20), cv2.FONT_HERSHEY_PLAIN, int(orig_image.shape[1]*.002), (0, 255, 0), int(orig_image.shape[1] * 0.0005))
