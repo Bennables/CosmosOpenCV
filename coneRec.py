@@ -5,7 +5,7 @@ comment it up
 
 import cv2 as cv2
 import numpy as np
-from lane_functions import VESC
+from functionsForLaneDetection import VESC
 import depthai as dai
 import time
 

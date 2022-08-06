@@ -4,7 +4,7 @@ import cv2
 from cv2 import cvtColor
 import depthai as dai
 import numpy as np
-from edgeDetection import *
+from stopSignEdgeDetection import *
 
 # Closer-in minimum depth, disparity range is doubled (from 95 to 190):
 extended_disparity = False

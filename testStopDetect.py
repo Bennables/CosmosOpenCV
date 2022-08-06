@@ -17,7 +17,7 @@ from matplotlib.pyplot import gray
 import depthai as dai
 import numpy as np
 import time
-from lane_functions import VESC
+from functionsForLaneDetection import VESC
 
 
 #shows image, 
