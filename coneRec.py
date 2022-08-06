@@ -5,7 +5,7 @@ comment it up
 
 import cv2 as cv2
 import numpy as np
-#from lane_functions import VESC
+from lane_functions import VESC
 import depthai as dai
 import time
 
@@ -25,7 +25,7 @@ def contours(img, mask):
     max_len_index = 0
     max_len = 0
     for counter, cont in enumerate(contours):
-        print (cont)
+
         if len(cont) > max_len:
             max_len_index = counter
     # print("contours", contours)
@@ -45,10 +45,9 @@ def regionOfInterest(img):
     # 
     bounds = np.int32([[[img.shape[1]* .35, 0], [img.shape[1]* .65, 0], [img.shape[1]* .65, img.shape[0]], [img.shape[1]*.35, img.shape[0]]]])
     mask = np.zeros_like(img)
-    #highlight the area
+    #highlight the are
     cv2.fillPoly(mask, bounds, (255,255,255))
     masked_image = cv2.bitwise_and(img, mask)
-    imShow('done', masked_image)
     return masked_image
 
 
@@ -76,7 +75,7 @@ def regionOfInterest(img):
 
 
 
-#car = VESC(serial_port='COM3')
+car = VESC(serial_port='COM3')
 # Video Processing:
 pipeline = dai.Pipeline()
 # Define a source - color camera
@@ -102,7 +101,7 @@ with dai.Device(pipeline) as device:
     qRgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
 
     while True:
-        #car.run(.5, .2)
+        car.run(.5, .2)
         time.sleep(3)
         inRgb = qRgb.get()  # blocking call, will wait until a new data has arrived
         ctrl = dai.CameraControl()
@@ -110,11 +109,14 @@ with dai.Device(pipeline) as device:
         controlQueue.send(ctrl)
         lane_image = inRgb.getCvFrame()
         orig_image = np.copy(lane_image)
-        cv2.imshow('fjd', lane_image)
 
 
         #imShow('canny', cannied) 
-        mask = cv2.inRange(orig_image, (0, 30, 180), (80,170, 255))
+        frame_hsv = cv2.cvtColor(orig_image, cv2.COLOR_BGR2HSV)
+        mask1 = cv2.inRange(frame_hsv, (0,50,20), (5,255,255))
+        mask2 = cv2.inRange(frame_hsv, (120,50,20), (180,255,255))
+        mask = cv2.bitwise_or(mask1, mask2)
+        
         # low = np.uint8([0, 0, 100])
         # high = np.uint8([30, 30, 255])
         # mask = cv2.inRange(orig_image, low, high)
@@ -126,17 +128,16 @@ with dai.Device(pipeline) as device:
             imShow('hi', cone)
         except:
             isCone = False
-            print('error')
             pass
 
         if isCone:
-            #car.run(.75, .2)
+            car.run(.75, .2)
             time.sleep(1.5)
-            #car.run(.1, .2)
-            #time.sleep(1.5)
-            #car.run(.6, .2)
+            car.run(.1, .2)
             time.sleep(1.5)
-            #car.run(.5, .2)
+            car.run(.6, .2)
+            time.sleep(1.5)
+            car.run(.5, .2)
             time.sleep(3)
             isCone = False
             

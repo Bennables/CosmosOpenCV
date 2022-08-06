@@ -18,22 +18,32 @@ import depthai as dai
 import numpy as np
 import time
 from lane_functions import VESC
-import serial.tools.list_ports
-print(list(serial.tools.list_ports.comports()))
 
-def imShow(img, name = 'fjdkf'):
+
+#shows image, 
+def imShow(img, name = 'image'):
+    """Shows the img(np.array). click any key to close image or change waitKey from 0 to somethign else, time = ms
+    Params: img(np.array), name(string)<optional>"""
     cv2.imshow(name, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
+
+
+#outlines the objects in the image by detecting color gradient changes    
 def toCanny(img):
+    """outlines objects in the image, returns canny
+    Prams: img(np.array)"""
     gray_x = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gaus_x = cv2.GaussianBlur(gray_x, (5,5), 0)
     canny_x = cv2.Canny(gaus_x, 100, 200)
     return canny_x
 
 
+#finds the contours(outlines the items of shame shade, binary mask is best)
 def findcontours(img, mask):
+    """Finds the contours of the mask and places them on img. returns img with contours on it
+    Params: img(np.array), mask(can be rgb image, easier to do black and white)
+    """
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
     #cv2.drawContours(img, contours, -1, (0,255,0), 3)
     max_len_index = 0
@@ -56,9 +66,10 @@ def findcontours(img, mask):
     #     print('img not found')
 
 
-
+# creating vesc object
 car = VESC(serial_port='/dev/ttyACM0')
 # Video Processing:
+# sets up camera and sends it
 pipeline = dai.Pipeline()
 # Define a source - color camera
 camRgb = pipeline.createColorCamera()
@@ -83,7 +94,6 @@ with dai.Device(pipeline) as device:
     qRgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
 
     while True:
-
         car.run(.5, .2)
         time.sleep(3)
         inRgb = qRgb.get()  # blocking call, will wait until a new data has arrived
@@ -91,27 +101,31 @@ with dai.Device(pipeline) as device:
         ctrl.setAutoFocusMode(dai.CameraControl.AutoFocusMode.CONTINUOUS_VIDEO)
         controlQueue.send(ctrl)
         lane_image = inRgb.getCvFrame()
+        #unecessary
         orig_image = lane_image.copy()
 
-
+        #changes the image to hsv color space and makes masks for red, tuples are bgr values
         frame_hsv = cv2.cvtColor(orig_image, cv2.COLOR_BGR2HSV)
         mask1 = cv2.inRange(frame_hsv, (0,50,20), (5,255,255))
         mask2 = cv2.inRange(frame_hsv, (120,50,20), (180,255,255))
+        #combines the 2 masks
         mask = cv2.bitwise_or(mask1, mask2)
         
         try:
-            cv2.waitKey(0)
+            #getting contours for the image and getting dimensions, also bool for it there is stop sign identified
             stopSign, x, y, w, h, isStopSign = findcontours(orig_image, mask)
+            #adding text to the image
             cv2.putText(stopSign, 'Stop sign detected!', (((x + w) // 2) - 10, y - 20), cv2.FONT_HERSHEY_PLAIN, int(orig_image.shape[1]*.002), (0, 255, 0), int(orig_image.shape[1] * 0.0005))
-
         except:
             isStopSign = False
             pass
+
+        #if there's a stop sign, it will stop.
         if isStopSign:
-            print('it fucking worked')
+            print('it worked')
             car.run(0.5, 0)
             time.sleep(1)
-            isStopSign = True
+            isStopSign = False
 
         else:
             print('fail')

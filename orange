@@ -57,7 +57,8 @@ cannied = toCanny(orig_image)
 
 
 imShow('fsd', orig_image)
-mask = cv2.inRange(orig_image, (0,0,170), (49,30, 255))
+mask = cv2.inRange(orig_image, (0,85,180), (4,190,255))
+#3,74,255
 # mask1 = cv2.inRange(orig_image, (2, 34, 180), (2, 67, 255))
 # mask = cv2.bitwise_or(mask1, mask2)
 

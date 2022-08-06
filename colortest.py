@@ -10,9 +10,9 @@ def imShow(img, name='fd'):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-x = cv2.imread('C:\Cosmos\CosmosOpenCV\gradient.jpg')
+x = cv2.imread('nature.jpg')
 
-imShow(x)
+
 x = np.copy(x)
 xx = cv2.cvtColor(x, cv2.COLOR_HSV2BGR)
 xy = cv2.cvtColor(x, cv2.COLOR_HLS2BGR)
@@ -20,8 +20,8 @@ y = cv2.cvtColor(x, cv2.COLOR_BGR2HLS)
 z = cv2.cvtColor(x, cv2.COLOR_BGR2HSV)
 
 imShow(x)
-imShow(xx, 'dfasdf  ')
-imShow(xy , 'hlstobgr')
+# imShow(xx, 'dfasdf  ')
+# imShow(xy , 'hlstobgr')
 imShow(y, 'hls')
 imShow(z, 'hsv')
 
